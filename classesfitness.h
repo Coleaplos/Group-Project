@@ -13,7 +13,7 @@ class User; //This is the operators information( there name, weight, and age)
 class Account; // The user will only have access to a free profile that allows 50 exercises and workout history for up to 4 weeks. As well as a premium one that does not limit historical data accessibility.
 class Goal; // This is the users goals
 class Workout; //Users can log their daily workouts, selecting from previously added exercises and specifying the duration or reps/sets.
-class ProgressTracker; //Provides a weekly summary showing a userâ€™s progress, such as sets, reps, calories burned, and progress toward goals.
+class ProgressTracker; //Provides a weekly summary showing a user’s progress, such as sets, reps, calories burned, and progress toward goals.
 class MotivationalTool; // This will help the user time there workouts and keep them focused 
 class Notification; //This will give the user a reminder to work out
 class SocialNetwork; // Users will be able to inform friends and other users about there accomplishments and there workouts 
@@ -153,3 +153,4 @@ public:
 
 
 #endif
+
