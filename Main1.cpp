@@ -1,12 +1,14 @@
-#include "classesfitness.h"
 #include <iostream>
 #include <string>
 #include <vector>
+#include <limits>
+#include <fstream>
+#include <ctime>
+#include "classesfitness.h"
 
 using namespace std;
 
 int main() {
-
     int username;
     int weight1{};
     int weight2{};
@@ -14,347 +16,309 @@ int main() {
     int age1{};
     int age2{};
     int age3{};
-    int email;
     int password{};
     int goal;
     int workouttype;
-    int armexcersise;
-    int backexcersise;
-    int sholderexcersise;
-    int abexcersise;
-    int legexcersise;
+    int armexercise;
+    int legexercise;
+    int abexercise;
+    int backexercise;
+    int shoulderexercise;
 
-    cout << "Please enter your username/Email:\n"; //login 
-    cout << " 1 is Cole/cole@gmail.com, 2 is Matt/Matt@gmail.com, 3 is Thao/Thao@gmail.com: \n";
+    // File paths for persistence
+    const string userDataFile = "user_data.txt";
+    const string workoutHistoryFile = "workout_history.txt";
+
+    // Create users
+    User cole(1, "Cole", false, 0, 0.0f, "Beginner");
+    User matt(2, "Matt", true, 0, 0.0f, "Beginner");
+    User thao(3, "Thao", false, 0, 0.0f, "Beginner");
+
+    // Load data for all users
+    cole.loadUserData(userDataFile + "_1");
+    cole.loadWorkoutHistory(workoutHistoryFile + "_1");
+    matt.loadUserData(userDataFile + "_2");
+    matt.loadWorkoutHistory(workoutHistoryFile + "_2");
+    thao.loadUserData(userDataFile + "_3");
+    thao.loadWorkoutHistory(workoutHistoryFile + "_3");
+
+    User* activeUser = nullptr;
+
+    // User Login
+    cout << "Please enter your username/Email:\n";
+    cout << "1 = Cole (cole@gmail.com), 2 = Matt (matt@gmail.com), 3 = Thao (thao@gmail.com):\n";
     cin >> username;
-    if (username == 1)
-    {
-        while (true) { //if and invalid number is entered 
-            cout << "Please enter your password: \n";
-            cin >> password;
-            bool fail = (password != 123);
-            if (fail) {
-                cout << " Password incorrect. Please try again. \n";
-                cin.clear();
-                cin.ignore();
-            }
-            else {
-                break;
-            }
-        }
-        cout << "you entered:  " << password;
-        cout << "\n Welcome Cole please enter your weight: \n";
-        cin >> weight1;
-        cout << " please enter your age: \n";
-        cin >> age1;
-    }
 
-    if (username == 2)
-    {
-        while (true) {
-            cout << "Please enter your password: \n";
-            cin >> password;
-            bool fail = (password != 123);
-            if (fail) {
-                cout << " Password incorrect. Please try again. \n";
-                cin.clear();
-                cin.ignore();
-            }
-            else {
-                break;
-            }
-        }
-        cout << "you entered: " << password;
-        cout << "\n Welcome Matt Thank you for your subscription. \n please enter your weight: \n";
-        cin >> weight2;
-        cout << " please enter your age: \n";
-        cin >> age2;
-    }
-    if (username == 3)
-    {
-        while (true) {
-            cout << "Please enter your password: \n";
-            cin >> password;
-            bool fail = (password != 123);
-            if (fail) {
-                cout << " Password incorrect. Please try again. \n";
-                cin.clear();
-                cin.ignore();
-            }
-            else {
-                break;
-            }
-        }
-        cout << "you entered: " << password;
-        cout << "\n Welcome Thao please enter your weight: \n";
-        cin >> weight3;
-        cout << " please enter your age: \n";
-        cin >> age3;
-    }
-
-
-
-    // Create instances for each class
     if (username == 1) {
-        Account userAccount("Cole", "password123", "Cole@email.com");
-        userAccount.createAccount();
-        userAccount.login();
+        activeUser = &cole;
         while (true) {
-            cout << " Select goal 1 if you would like to lose 10 pounds:\n" << endl;
-            cout << " Select goal 2 if you would like to lose 20 pounds:\n" << endl;
-            cout << " Select goal 3 if you would like to lose 30 pounds:\n" << endl;
-            cout << "please set your goal: \n" << endl;
-            cin >> goal;
-            bool fail = (goal != 1 && goal != 2 && goal != 3);
-            if (fail) {
-                cout << "invald Number Please Try Again \n";
+            cout << "Please enter your password: \n";
+            cin >> password;
+            if (password != 123) {
+                cout << "Password incorrect. Please try again.\n";
                 cin.clear();
-                cin.ignore();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
             else {
                 break;
             }
         }
-            if (goal == 1) {
-                Goal userGoal("Weight Loss", 10.0f);
-                userGoal.defineGoal();
-
-                User user(1, "Cole", age1, weight1, "Beginner");
-                user.setGoal(&userGoal);
-            }
-            if (goal == 2) {
-                Goal userGoal("Weight Loss", 20.0f);
-                userGoal.defineGoal();
-
-                User user(1, "Cole", age1, weight1, "Beginner");
-                user.setGoal(&userGoal);
-            }
-            if (goal == 3) {
-                Goal userGoal("Weight Loss", 30.0f);
-                userGoal.defineGoal();
-
-                User user(1, "Cole", age1, weight1, "Beginner");
-                user.setGoal(&userGoal);
-            }
-
-            userAccount.logout();
-            return 0;
-        }
-        if (username == 2) {
-            AccountPremium userAccountPremium("Matt", "password123", "Matt@email.com");
-            userAccountPremium.createAccountPremium();
-            userAccountPremium.loginPremium();
-            while (true) {
-                cout << " Select goal 1 if you would like to lose 10 pounds:\n" << endl;
-                cout << " Select goal 2 if you would like to lose 20 pounds:\n" << endl;
-                cout << " Select goal 3 if you would like to lose 30 pounds:\n" << endl;
-                cout << "please set your goal: \n" << endl;
-                cin >> goal;
-                bool fail = (goal != 1 && goal != 2 && goal != 3);
-                if (fail) {
-                    cout << "invald Number Please Try Again \n";
-                    cin.clear();
-                    cin.ignore();
-                }
-                else {
-                    break;
-                }
-            }
-            if (goal == 1) {
-                Goal userGoal("Weight Loss", 10.0f);
-                userGoal.defineGoal();
-
-                User user(2, "Matt", age2, weight2, "Beginner");
-                user.setGoal(&userGoal);
-            }
-            if (goal == 2) {
-                Goal userGoal("Weight Loss", 20.0f);
-                userGoal.defineGoal();
-
-                User user(2, "Matt", age2, weight2, "Beginner");
-                user.setGoal(&userGoal);
-            }
-            if (goal == 3) {
-                Goal userGoal("Weight Loss", 30.0f);
-                userGoal.defineGoal();
-
-                User user(2, "Matt", age2, weight2, "Beginner");
-                user.setGoal(&userGoal);
-            }
-
-            userAccountPremium.logoutPremium();
-            return 0;
-        }
-        if (username == 3) {
-            Account userAccount("Thao", "password123", "Thao@email.com");
-            userAccount.createAccount();
-            userAccount.login();
-            while (true) {
-                cout << " Select goal 1 if you would like to lose 10 pounds:\n" << endl;
-                cout << " Select goal 2 if you would like to lose 20 pounds:\n" << endl;
-                cout << " Select goal 3 if you would like to lose 30 pounds:\n" << endl;
-                cout << "please set your goal: \n" << endl;
-                cin >> goal;
-                bool fail = (goal != 1 && goal != 2 && goal != 3);
-                if (fail) {
-                    cout << "invald Number Please Try Again \n";
-                    cin.clear();
-                    cin.ignore();
-                }
-                else {
-                    break;
-                }
-            }
-            if (goal == 1) {
-                Goal userGoal("Weight Loss", 10.0f);
-                userGoal.defineGoal();
-
-                User user(3, "Thao", age3, weight3, "Beginner");
-                user.setGoal(&userGoal);
-            }
-            if (goal == 2) {
-                Goal userGoal("Weight Loss", 20.0f);
-                userGoal.defineGoal();
-
-                User user(3, "Thao", age3, weight3, "Beginner");
-                user.setGoal(&userGoal);
-            }
-            if (goal == 3) {
-                Goal userGoal("Weight Loss", 30.0f);
-                userGoal.defineGoal();
-
-                User user(3, "Thao", age3, weight3, "Beginner");
-                user.setGoal(&userGoal);
-            }
-
-            cout << "Please select what type of excersise you would like to do today: \n " << endl;
-            cout << " 1 = arms \n 2 = legs \n 3 = abs \n 4 = back \n 5 = sholders " << endl;
-            cin >> workouttype;
-            if (workouttype == 1) {
-                cout << "You selected Arms. \n" << endl;
-                cout << " Select what arm excercise you would like to do. \n" << endl;
-                cout << "1 is Skull Crusher. \n" << endl;
-                cout << "2 is Cable Triceppush Down. \n" << endl;
-                cout << "3 is Overhead Tricep Extension. \n" << endl;
-                cout << "4 is Dumbbell Preacher Curl. \n" << endl; //Set up the bench at a 60-degree incline (one setting below fully upright). Select an appropriate weight dumbbell.Hold the dumbbell in one hand and stand behind the bench.Bring that arm over the top of the bench so the upper arm rests on the backrest, with your armpit hugging the top of the bench(you may have to bend your knees slightly).Start with your palm facing up, arm bent.Then begin the movement, by extending your forearm down as far as possible.Pause, then reverse the motion, curling the dumbbell up towards your shoulder.
-                cout << "5 is Barbell Bicep Curl . \n" << endl; //Select a preloaded bar of an appropriate weight, or load up a barbell with plates. Take hold of the bar in a supinated grip(palms up), shoulder - width apart.Stand with your arms fully extended, elbows by your side.Feet should be directly below hips, knees slightly bent, and shoulder blades retracted.Keeping your elbows in the same position(by your side), contract your biceps and curl the bar upwards through a full range of motion.Once your elbows are fully bent and the bar is near your shoulders, pause, squeezing your biceps as you do so.Then, slowly lower back to the starting position, arms fully extended.
-                cout << "6 is Cable Bicep Curl. \n" << endl; // Set the cable to the bottom of the tower and attach a straight bar attachment. Set the weight by adjusting the pin.Take hold of the bar in both hands, with a supinated(underhand) grip.Take a step back from the tower, positioning your feet to shoulder width apart, keeping a soft knee.Arms should be extended, bar by your thighs. Begin the curl by engaging your core, and bending your elbows to move the bar towards your shoulders.Keep your elbows tucked into your sides and ensure only your forearms move. When you reach the top, pause, squeezing your biceps.Reverse the movement, slowly lowering back to the starting position, arms fully extended.Repeat.
-                cin >> armexcersise;
-                if (armexcersise == 1) {
-                    cout << "You selected Skull Crushers. \n" << endl;
-                    cout << "Here is the steps to completing this excercise. \n" << endl;
-                    cout << " Step One - Position the bench so it is lying flat.\n " << endl;
-                    cout << " Step Two - Pick up two dumbbells you can comfortably use for the prescribed rep range. \n" << endl;
-                    cout << " Step Three -  Sit on the end of the bench, resting the two dumbbells on your thighs, feet planted on the floor. \n " << endl;
-                    cout << " Step Four - Lie back on the bench, extending your arms out above you as you do so, making sure your feet are still planted on the ground.Elbows should be soft and not locked out. \n " << endl;
-                    cout << " Step Five - Start the movement by flexing your elbows, lowering the dumbbells' heads toward your ears, keeping your upper arms as still as possible. \n " << endl;
-                    cout << " Step Six - When the weight is level with your ears, pause, then extend the forearms back to the starting position, squeezing your triceps at the extension. \n" << endl;
-                    cout << " Repeat Steps. \n " << endl;
-                };
-                if (armexcersise == 2) {
-                    cout << "You selected Cable Tricep Extension. \n" << endl;
-                    cout << "Here is the steps to completing this excercise. \n" << endl;
-                    cout << " Step One - Set up the cable to the highest setting on the tower with a rope attachment (or other attachment of your choice).\n " << endl;
-                    cout << " Step Two - Stand with feet shoulder - width apart, facing the cable, taking hold of the rope in a pronated grip. \n" << endl;
-                    cout << " Step Three -  Brace your core and keep your elbows close to your sides. \n " << endl;
-                    cout << " Step Four - Press the rope handles down toward your outer thighs. \n " << endl;
-                    cout << " Step Five - When your arms are fully extended, pause, squeezing your triceps. \n " << endl;
-                    cout << " Step Six - Slowly return to the starting position, bending your elbows to bring your forearms back up. \n" << endl;
-                    cout << " Repeat Steps. \n " << endl;
-                };
-                if (armexcersise == 3) {
-                    cout << "You selected Overhead Tricep Extension. \n" << endl;
-                    cout << "Here is the steps to completing this excercise. \n" << endl;
-                    cout << " Step One - Grip the handle of the dumbbell in one hand.\n " << endl;
-                    cout << " Step Two - Move your feet into a shoulder-width stance, engaging your core by bracing your stomach. \n" << endl;
-                    cout << " Step Three -  Lift the dumbbell above your head, fully extending your arm so your upper arm is next to your ear, knuckles facing the ceiling. \n " << endl;
-                    cout << " Step Four - Begin the movement by bending your elbow to lower the dumbbell behind your head. \n " << endl;
-                    cout << " Step Five - Your upper arm should stay fixed beside your ear with only your forearm moving. \n " << endl;
-                    cout << " Step Six - Once you have lowered as far as possible, pause, then extend your arm to return the dumbbell back to the starting position, squeezing your tricep as you extend. \n" << endl;
-                    cout << " Repeat Steps. \n " << endl;
-                };
-
-            }
-            if (workouttype == 2) {
-                cout << "You selected Legs. \n" << endl;
-                cout << " Select what Leg excercise you would like to do. \n" << endl;
-                cout << "1 is Bulgarian Split-Squat . \n" << endl; // 
-                cout << "2 is Barbell Hip Thrust. \n" << endl; //
-                cout << "3 is Back Squats. \n" << endl; //
-                cout << "4 is Hack Squat. \n" << endl; //
-                cout << "5 is Romanian Deadlift. \n" << endl; //Grab the bar just outside your hips with your feet around hip width (2).Imagine you have apples in your armpits and you can’t let them fall out.Slide your hips back and up whilst only letting your knees bend slightly.Allow the bar to glide down your thighs and your shoulders come over your toes.The bar will typically finish around the middle of your shins.
-                cin >> legexcersise;
-                if (legexcersise == 1) {
-                    cout << "You selected Bulgarian Split-Squat. \n" << endl;
-                    cout << "Here is the steps to completing this excercise. \n" << endl;
-                    cout << " Step One - Grip the handle of the dumbbell in one hand.\n " << endl;
-                    cout << " Step Two - Move your feet into a shoulder-width stance, engaging your core by bracing your stomach. \n" << endl;
-                    cout << " Step Three -  Lift the dumbbell above your head, fully extending your arm so your upper arm is next to your ear, knuckles facing the ceiling. \n " << endl;
-                    cout << " Step Four - Begin the movement by bending your elbow to lower the dumbbell behind your head. \n " << endl;
-                    cout << " Step Five - Your upper arm should stay fixed beside your ear with only your forearm moving. \n " << endl;
-                    cout << " Step Six - Once you have lowered as far as possible, pause, then extend your arm to return the dumbbell back to the starting position, squeezing your tricep as you extend. \n" << endl;
-                    cout << " Repeat Steps. \n " << endl;
-                };
-                if (workouttype == 3) {
-                    cout << "You selected Abs. \n" << endl;
-                    cout << " Select what Ab excercise you would like to do. \n" << endl;
-                    cout << "1 is Skull Crusher. \n" << endl;
-                    cout << "2 is Cable Triceppush Down. \n" << endl;
-                    cout << "3 is Overhead Tricep Extension. \n" << endl;
-                    cout << "4 is Dumbbell Preacher Curl. \n" << endl; //Set up the bench at a 60-degree incline (one setting below fully upright). Select an appropriate weight dumbbell.Hold the dumbbell in one hand and stand behind the bench.Bring that arm over the top of the bench so the upper arm rests on the backrest, with your armpit hugging the top of the bench(you may have to bend your knees slightly).Start with your palm facing up, arm bent.Then begin the movement, by extending your forearm down as far as possible.Pause, then reverse the motion, curling the dumbbell up towards your shoulder.
-                    cout << "5 is Barbell Bicep Curl . \n" << endl; //Select a preloaded bar of an appropriate weight, or load up a barbell with plates. Take hold of the bar in a supinated grip(palms up), shoulder - width apart.Stand with your arms fully extended, elbows by your side.Feet should be directly below hips, knees slightly bent, and shoulder blades retracted.Keeping your elbows in the same position(by your side), contract your biceps and curl the bar upwards through a full range of motion.Once your elbows are fully bent and the bar is near your shoulders, pause, squeezing your biceps as you do so.Then, slowly lower back to the starting position, arms fully extended.   
-                    cout << "6 is Cable Bicep Curl. \n" << endl; // Set the cable to the bottom of the tower and attach a straight bar attachment. Set the weight by adjusting the pin.Take hold of the bar in both hands, with a supinated(underhand) grip.Take a step back from the tower, positioning your feet to shoulder width apart, keeping a soft knee.Arms should be extended, bar by your thighs. Begin the curl by engaging your core, and bending your elbows to move the bar towards your shoulders.Keep your elbows tucked into your sides and ensure only your forearms move. When you reach the top, pause, squeezing your biceps.Reverse the movement, slowly lowering back to the starting position, arms fully extended.Repeat.
-                    cin >> abexcersise;
-                };
-                if (workouttype == 4) {
-                    cout << "You selected Back. \n" << endl;
-                    cout << " Select what Back excercise you would like to do. \n" << endl;
-                    cout << "1 is Skull Crusher. \n" << endl;
-                    cout << "2 is Cable Triceppush Down. \n" << endl;
-                    cout << "3 is Overhead Tricep Extension. \n" << endl;
-                    cout << "4 is Dumbbell Preacher Curl. \n" << endl; //Set up the bench at a 60-degree incline (one setting below fully upright). Select an appropriate weight dumbbell.Hold the dumbbell in one hand and stand behind the bench.Bring that arm over the top of the bench so the upper arm rests on the backrest, with your armpit hugging the top of the bench(you may have to bend your knees slightly).Start with your palm facing up, arm bent.Then begin the movement, by extending your forearm down as far as possible.Pause, then reverse the motion, curling the dumbbell up towards your shoulder.
-                    cout << "5 is Barbell Bicep Curl . \n" << endl; //Select a preloaded bar of an appropriate weight, or load up a barbell with plates. Take hold of the bar in a supinated grip(palms up), shoulder - width apart.Stand with your arms fully extended, elbows by your side.Feet should be directly below hips, knees slightly bent, and shoulder blades retracted.Keeping your elbows in the same position(by your side), contract your biceps and curl the bar upwards through a full range of motion.Once your elbows are fully bent and the bar is near your shoulders, pause, squeezing your biceps as you do so.Then, slowly lower back to the starting position, arms fully extended.
-                    cout << "6 is Cable Bicep Curl. \n" << endl; // Set the cable to the bottom of the tower and attach a straight bar attachment. Set the weight by adjusting the pin.Take hold of the bar in both hands, with a supinated(underhand) grip.Take a step back from the tower, positioning your feet to shoulder width apart, keeping a soft knee.Arms should be extended, bar by your thighs. Begin the curl by engaging your core, and bending your elbows to move the bar towards your shoulders.Keep your elbows tucked into your sides and ensure only your forearms move. When you reach the top, pause, squeezing your biceps.Reverse the movement, slowly lowering back to the starting position, arms fully extended.Repeat.
-                    cin >> backexcersise;
-                };
-                if (workouttype == 5) {
-                    cout << "You selected Sholders. \n" << endl;
-                    cout << " Select what Sholder excercise you would like to do. \n" << endl;
-                    cout << "1 is Skull Crusher. \n" << endl;
-                    cout << "2 is Cable Triceppush Down. \n" << endl;
-                    cout << "3 is Overhead Tricep Extension. \n" << endl;
-                    cout << "4 is Dumbbell Preacher Curl. \n" << endl; //Set up the bench at a 60-degree incline (one setting below fully upright). Select an appropriate weight dumbbell.Hold the dumbbell in one hand and stand behind the bench.Bring that arm over the top of the bench so the upper arm rests on the backrest, with your armpit hugging the top of the bench(you may have to bend your knees slightly).Start with your palm facing up, arm bent.Then begin the movement, by extending your forearm down as far as possible.Pause, then reverse the motion, curling the dumbbell up towards your shoulder.
-                    cout << "5 is Barbell Bicep Curl . \n" << endl; //Select a preloaded bar of an appropriate weight, or load up a barbell with plates. Take hold of the bar in a supinated grip(palms up), shoulder - width apart.Stand with your arms fully extended, elbows by your side.Feet should be directly below hips, knees slightly bent, and shoulder blades retracted.Keeping your elbows in the same position(by your side), contract your biceps and curl the bar upwards through a full range of motion.Once your elbows are fully bent and the bar is near your shoulders, pause, squeezing your biceps as you do so.Then, slowly lower back to the starting position, arms fully extended.
-                    cout << "6 is Cable Bicep Curl. \n" << endl; // Set the cable to the bottom of the tower and attach a straight bar attachment. Set the weight by adjusting the pin.Take hold of the bar in both hands, with a supinated(underhand) grip.Take a step back from the tower, positioning your feet to shoulder width apart, keeping a soft knee.Arms should be extended, bar by your thighs. Begin the curl by engaging your core, and bending your elbows to move the bar towards your shoulders.Keep your elbows tucked into your sides and ensure only your forearms move. When you reach the top, pause, squeezing your biceps.Reverse the movement, slowly lowering back to the starting position, arms fully extended.Repeat.
-                    cin >> sholderexcersise;
-                };
-
-
-                userAccount.logout();
-                return 0;
-            }
-        }
-
-        Goal userGoal("Weight Loss", 10.0f);
-        userGoal.defineGoal();
-
-        User user(1, "John Doe", 28, 80.0f, "Beginner");
-        user.setGoal(&userGoal);
-
-        Workout workout(101, "Morning Routine", "Strength", 3);
-        workout.chooseWorkout();
-
-        Exercise exercise("Push-up", 3, 12, 30.0f);
-        exercise.displayInstruction();
-        exercise.performExercise();
-
-        ProgressTracker tracker(200.0f, 5000, 45.0f);
-        tracker.logProgress();
-        tracker.syncData();
-
-        MotivationalTool motivator("Timer");
-        motivator.startTimer();
-        motivator.playMusic();
-        motivator.giveReward();
-
+        cout << "Welcome Cole! Please enter your weight:\n";
+        cin >> weight1;
+        cout << "Please enter your age:\n";
+        cin >> age1;
+        activeUser->updateUserInfo(age1, static_cast<float>(weight1));
     }
+    else if (username == 2) {
+        activeUser = &matt;
+        while (true) {
+            cout << "Please enter your password: \n";
+            cin >> password;
+            if (password != 456) {
+                cout << "Password incorrect. Please try again.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            else {
+                break;
+            }
+        }
+        cout << "Welcome Matt! Please enter your weight:\n";
+        cin >> weight2;
+        cout << "Please enter your age:\n";
+        cin >> age2;
+        activeUser->updateUserInfo(age2, static_cast<float>(weight2));
+    }
+    else if (username == 3) {
+        activeUser = &thao;
+        while (true) {
+            cout << "Please enter your password: \n";
+            cin >> password;
+            if (password != 789) {
+                cout << "Password incorrect. Please try again.\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            else {
+                break;
+            }
+        }
+        cout << "Welcome Thao! Please enter your weight:\n";
+        cin >> weight3;
+        cout << "Please enter your age:\n";
+        cin >> age3;
+        activeUser->updateUserInfo(age3, static_cast<float>(weight3));
+    }
+    else {
+        cout << "Invalid username selection.\n";
+        return 1;
+    }
+
+    // Main Program Loop
+    while (true) {
+        cout << "Select an option:\n";
+        cout << "1. Set Goal\n";
+        cout << "2. Select and Log Workout\n";
+        cout << "3. View Workout History\n";
+        cout << "4. Exit\n";
+        int choice;
+        cin >> choice;
+
+        if (choice == 1) {
+            cout << "Select a goal:\n";
+            cout << "1. Lose 10 pounds\n";
+            cout << "2. Lose 20 pounds\n";
+            cout << "3. Lose 30 pounds\n";
+            cin >> goal;
+
+            if (goal == 1) {
+                Goal userGoal("Weight Loss", 10.0f);
+                activeUser->setGoal(&userGoal);
+                userGoal.defineGoal();
+            }
+            else if (goal == 2) {
+                Goal userGoal("Weight Loss", 20.0f);
+                activeUser->setGoal(&userGoal);
+                userGoal.defineGoal();
+            }
+            else if (goal == 3) {
+                Goal userGoal("Weight Loss", 30.0f);
+                activeUser->setGoal(&userGoal);
+                userGoal.defineGoal();
+            }
+            else {
+                cout << "Invalid goal selection.\n";
+            }
+        }
+        else if (choice == 2) { // Select and log workout
+            cout << "Please select what type of exercise you would like to do today:\n";
+            cout << "1 = Arms\n2 = Legs\n3 = Abs\n4 = Back\n5 = Shoulders\n";
+            cin >> workouttype;
+
+            std::string workoutCategory;
+            std::string workoutName;
+
+            if (workouttype == 1) { // Arms
+                workoutCategory = "Arms";
+                cout << "You selected Arms. Select an arm exercise:\n";
+                cout << "1. Skull Crusher\n2. Cable Tricep Push Down\n3. Overhead Tricep Extension\n";
+                cin >> armexercise;
+
+                if (armexercise == 1) {
+                    workoutName = "Skull Crusher";
+                    Exercise skullCrusher("Skull Crusher", 3, 12, 0.0f);
+                    skullCrusher.displayInstruction();
+                }
+                else if (armexercise == 2) {
+                    workoutName = "Cable Tricep Push Down";
+                    Exercise cablePushDown("Cable Tricep Push Down", 3, 12, 0.0f);
+                    cablePushDown.displayInstruction();
+                }
+                else if (armexercise == 3) {
+                    workoutName = "Overhead Tricep Extension";
+                    Exercise overheadTriExtension("Overhead Tricep Extension", 3, 12, 0.0f);
+                    overheadTriExtension.displayInstruction();
+                }
+                else {
+                    cout << "Invalid exercise.\n";
+                }
+            }
+            else if (workouttype == 2) { // Legs
+                workoutCategory = "Legs";
+                cout << "You selected Legs. Select a leg exercise:\n";
+                cout << "1. Bulgarian Split Squat\n2. Barbell Hip Thrust\n3. Romanian Deadlift\n";
+                cin >> legexercise;
+
+                if (legexercise == 1) {
+                    workoutName = "Bulgarian Split Squat";
+                    Exercise bulgarianSplitSquat("Bulgarian Split Squat", 3, 10, 0.0f);
+                    bulgarianSplitSquat.displayInstruction();
+                }
+                else if (legexercise == 2) {
+                    workoutName = "Barbell Hip Thrust";
+                    Exercise barbellHipThrust("Barbell Hip Thrust", 3, 10, 0.0f);
+                    barbellHipThrust.displayInstruction();
+                }
+                else if (legexercise == 3) {
+                    workoutName = "Romanian Deadlift";
+                    Exercise romanianDeadlift("Romanian Deadlift", 3, 10, 0.0f);
+                    romanianDeadlift.displayInstruction();
+                }
+                else {
+                    cout << "Invalid exercise.\n";
+                }
+            }
+            else if (workouttype == 3) { // Abs
+                workoutCategory = "Abs";
+                cout << "You selected Abs. Select an abs exercise:\n";
+                cout << "1. Crunches\n2. Russian Twists\n3. Cable Crunches\n";
+                cin >> abexercise;
+
+                if (abexercise == 1) {
+                    workoutName = "Crunches";
+                    Exercise crunches("Crunches", 3, 12, 0.0f);
+                    crunches.displayInstruction();
+                }
+                else if (abexercise == 2) {
+                    workoutName = "Russian Twists";
+                    Exercise russianTwists("Russian Twists", 3, 12, 0.0f);
+                    russianTwists.displayInstruction();
+                }
+                else if (abexercise == 3) {
+                    workoutName = "Cable Crunches";
+                    Exercise cableCrunches("Cable Crunches", 3, 12, 0.0f);
+                    cableCrunches.displayInstruction();
+                }
+                else {
+                    cout << "Invalid exercise.\n";
+                }
+            }
+            else if (workouttype == 4) { // Back
+                workoutCategory = "Back";
+                cout << "You selected Back. Select a back exercise:\n";
+                cout << "1. Bent Over Barbell Row\n2. Pull Ups\n3. Dumbbell Shrugs\n";
+                cin >> backexercise;
+
+                if (backexercise == 1) {
+                    workoutName = "Bent Over Barbell Row";
+                    Exercise bentoverBarbell("Bent Over Barbell Row", 3, 12, 0.0f);
+                    bentoverBarbell.displayInstruction();
+                }
+                else if (backexercise == 2) {
+                    workoutName = "Pull Ups";
+                    Exercise pullUps("Pull Ups", 3, 12, 0.0f);
+                    pullUps.displayInstruction();
+                }
+                else if (backexercise == 3) {
+                    workoutName = "Dumbbell Shrugs";
+                    Exercise dumbbellShrugs("Dumbbell Shrugs", 3, 12, 0.0f);
+                    dumbbellShrugs.displayInstruction();
+                }
+                else {
+                    cout << "Invalid exercise.\n";
+                }
+            }
+            else if (workouttype == 5) { // Shoulders
+                workoutCategory = "Shoulders";
+                cout << "You selected Shoulders. Select a shoulder exercise:\n";
+                cout << "1. Overhead Press\n2. Lateral Raises\n3. Shrugs\n";
+                cin >> shoulderexercise;
+
+                if (shoulderexercise == 1) {
+                    workoutName = "Overhead Press";
+                    Exercise overheadPress("Overhead Press", 3, 12, 0.0f);
+                    overheadPress.displayInstruction();
+                }
+                else if (shoulderexercise == 2) {
+                    workoutName = "Lateral Raises";
+                    Exercise lateralRaises("Lateral Raises", 3, 12, 0.0f);
+                    lateralRaises.displayInstruction();
+                }
+                else if (shoulderexercise == 3) {
+                    workoutName = "Shrugs";
+                    Exercise shrugs("Shrugs", 3, 12, 0.0f);
+                    shrugs.displayInstruction();
+                }
+                else {
+                    cout << "Invalid exercise.\n";
+                }
+            }
+            else {
+                cout << "Invalid workout type.\n";
+            }
+
+            // Log the workout if a valid name was selected
+            if (!workoutName.empty()) {
+                activeUser->logWorkout(workoutName, workoutCategory);
+                std::cout << "Workout logged: " << workoutName << " (" << workoutCategory << ")\n";
+            }
+        }
+
+        else if (choice == 3) {
+            cout << "Viewing Workout History:\n";
+            activeUser->displayWorkoutHistory(false); // Assuming non-premium user
+        }
+        else if (choice == 4) {
+            cout << "Saving data...\n";
+            activeUser->saveUserData(userDataFile + "_" + to_string(activeUser->getId()));
+            activeUser->saveWorkoutHistory(workoutHistoryFile + "_" + to_string(activeUser->getId()));
+            cout << "Goodbye, " << activeUser->getName() << "!\n";
+            break;
+        }
+        else {
+            cout << "Invalid choice. Please try again.\n";
+        }
+    }
+
+    // Save all user data before exiting
+    cole.saveUserData(userDataFile + "_1");
+    cole.saveWorkoutHistory(workoutHistoryFile + "_1");
+    matt.saveUserData(userDataFile + "_2");
+    matt.saveWorkoutHistory(workoutHistoryFile + "_2");
+    thao.saveUserData(userDataFile + "_3");
+    thao.saveWorkoutHistory(workoutHistoryFile + "_3");
+
+    std::cout << "All user data saved successfully. Exiting program.\n";
+
+    return 0;
+}
