@@ -79,6 +79,9 @@ public:
 
     int getId() const;
     std::string getName() const;
+
+private:
+    WorkoutHistory workoutHistory;
 };
 
 class Goal {
@@ -91,4 +94,3 @@ public:
 };
 
 #endif
-
