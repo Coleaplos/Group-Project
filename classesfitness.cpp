@@ -49,17 +49,11 @@ void WorkoutHistory::saveWorkoutHistory(const std::string& filename) const {
 }
 
 void WorkoutHistory::displayWorkoutHistory(bool isPremium, int limit) const {
-    time_t currentTime = std::time(nullptr);
-    int count = 0;
-    std::cout << "Workout History:\n";
-    for (const auto& entry : workouts) {
-        if (!isPremium && count >= limit) break;
-        struct tm timeInfo;
-        localtime_s(&timeInfo, &entry.timestamp);
-        std::cout << "- " << entry.workoutName
-            << " (" << entry.workoutType << ") on "
-            << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
-        count++;
+    if (isPremium) {
+        displayAllWorkouts();
+    }
+    else {
+        displayLastNWorkouts(limit);
     }
 }
 
@@ -145,26 +139,18 @@ void WorkoutHistory::logWorkout(const std::string& workoutName, const std::strin
 }
 
 void User::logWorkout(const std::string& workoutName, const std::string& workoutType) {
-    WorkoutHistory workoutHistory;
     workoutHistory.addWorkout(workoutName, workoutType); // Use the updated addWorkout method
 }
 
-void User::displayWorkoutHistory(bool isPremium) const{
-    if (isPremium) {
-        std::cout << "Displaying full workout history for premium user.\n";
-    }
-    else {
-        std::cout << "Displaying limited workout history for standard user.\n";
-    }
+void User::displayWorkoutHistory() const {
+    workoutHistory.displayWorkoutHistory(isPremium, 40);
 }
 
 void User::displayFilteredWorkoutsByDate(time_t startDate, time_t endDate) {
-    WorkoutHistory workoutHistory;
     workoutHistory.filterWorkoutsByDate(startDate, endDate);
 }
 
 void User::displayFilteredWorkoutsByType(const std::string& type) {
-    WorkoutHistory workoutHistory;
     workoutHistory.filterWorkoutsByType(type);
 }
 
