@@ -296,7 +296,7 @@ int main() {
 
         else if (choice == 3) {
             cout << "Viewing Workout History:\n";
-            activeUser->displayWorkoutHistory(false); // Assuming non-premium user
+            activeUser->displayWorkoutHistory();
         }
         else if (choice == 4) {
             cout << "Saving data...\n";
