@@ -12,6 +12,22 @@
 class Goal;
 class WorkoutHistory;
 
+// Notification System
+class Notification {
+public:
+    void sendNotification(const std::string& message) const {
+        std::cout << "[Notification]: " << message << std::endl;
+    }
+};
+
+// Social Media Sharing
+class SocialMedia {
+public:
+    void share(const std::string& platform, const std::string& message) const {
+        std::cout << "[Shared on " << platform << "]: " << message << std::endl;
+    }
+};
+
 class WorkoutEntry {
 public:
     std::string workoutName;
@@ -61,12 +77,28 @@ private:
     int age;
     float weight;
     std::string fitnessLevel;
+ Notification notificationSystem; // Notification system
+ SocialMedia socialMediaSystem;   // Social media sharing system
 
 public:
     User(int id, const std::string& name, bool isPremium, int age = 0, float weight = 0.0f, const std::string& fitnessLevel = "Beginner");
 
     void setGoal(Goal* goal);
     void logWorkout(const std::string& workoutName, const std::string& workoutType);
+    notificationSystem.sendNotification("Workout logged: " + workoutName + " (" + workoutType + ")");
+}
+
+// Share a workout log on social media
+void shareWorkoutLog(const std::string& platform, const std::string& workoutName, const std::string& workoutType) {
+    std::string message = "Just completed " + workoutName + " (" + workoutType + ")! Feeling great!";
+    socialMediaSystem.share(platform, message);
+}
+
+// Share an achievement on social media
+void shareAchievement(const std::string& platform, const std::string& achievement) {
+    std::string message = "I just achieved: " + achievement + "! #FitnessGoals";
+    socialMediaSystem.share(platform, message);
+}
     void displayWorkoutHistory();
     void displayWorkoutHistory(bool isPremium);
     void displayFilteredWorkoutsByDate(time_t startDate, time_t endDate);
