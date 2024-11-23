@@ -10,6 +10,23 @@
 
 using namespace std;
 
+// Mock Notification System
+class NotificationSystem {
+public:
+    static void sendNotification(const string& message) {
+        cout << "[NOTIFICATION]: " << message << endl;
+    }
+};
+
+// Mock Social Media Integration
+class SocialMedia {
+public:
+    static void shareWorkout(const string& workoutName, const string& workoutType) {
+        cout << "[SOCIAL MEDIA]: Shared your workout '" << workoutName
+            << "' (" << workoutType << ") to your timeline!" << endl;
+    }
+};
+
 // WorkoutHistory methods
 void WorkoutHistory::displayLastNWorkouts(size_t n) const {
     size_t count = std::min(n, workouts.size());
@@ -158,6 +175,7 @@ void User::updateUserInfo(int newAge, float newWeight) {
     age = newAge;
     weight = newWeight;
     std::cout << "User " << name << "'s information updated: Age = " << age << ", Weight = " << weight << "\n";
+        NotificationSystem::sendNotification("User info updated: Age = " + to_string(age) + ", Weight = " + to_string(weight));
 }
 
 void User::saveUserData(const std::string& filename) const {
