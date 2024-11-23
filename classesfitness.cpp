@@ -29,35 +29,50 @@ public:
 
 // WorkoutHistory methods
 void WorkoutHistory::displayLastNWorkouts(size_t n) const {
-    size_t count = std::min(n, workouts.size());
+    size_t count = min(n, workouts.size());
     for (size_t i = workouts.size() - count; i < workouts.size(); ++i) {
         const auto& entry = workouts[i];
         struct tm timeInfo;
-        localtime_s(&timeInfo, &entry.timestamp);
-        std::cout << "- " << entry.workoutName
-            << " (" << entry.workoutType << ") on "
-            << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
+#if defined(_WIN32) || defined(_WIN64)
+        if (localtime_s(&timeInfo, &entry.timestamp) == 0) {
+#else
+        if (localtime_r(&entry.timestamp, &timeInfo) != nullptr) {
+#endif
+            cout << "- " << entry.workoutName
+                << " (" << entry.workoutType << ") on "
+                << put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
+        } else {
+            cerr << "Error converting timestamp to local time.\n";
+        }
     }
 }
 
 void WorkoutHistory::displayAllWorkouts() const {
     for (const auto& entry : workouts) {
         struct tm timeInfo;
-        localtime_s(&timeInfo, &entry.timestamp);
-        std::cout << "- " << entry.workoutName
-            << " (" << entry.workoutType << ") on "
-            << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
+#if defined(_WIN32) || defined(_WIN64)
+        if (localtime_s(&timeInfo, &entry.timestamp) == 0) {
+#else
+        if (localtime_r(&entry.timestamp, &timeInfo) != nullptr) {
+#endif
+            cout << "- " << entry.workoutName
+                << " (" << entry.workoutType << ") on "
+                << put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
+        } else {
+            cerr << "Error converting timestamp to local time.\n";
+        }
     }
 }
 
-void WorkoutHistory::addWorkout(const std::string& workoutName, const std::string& workoutType) {
-    workouts.emplace_back(workoutName, workoutType);
+void WorkoutHistory::addWorkout(const string& workoutName, const string& workoutType) {
+    time_t currentTime = time(nullptr);
+    workouts.emplace_back(workoutName, workoutType, currentTime);
 }
 
-void WorkoutHistory::saveWorkoutHistory(const std::string& filename) const {
-    std::ofstream file(filename);
+void WorkoutHistory::saveWorkoutHistory(const string& filename) const {
+    ofstream file(filename);
     if (!file) {
-        std::cerr << "Error: Unable to open file for saving workout history.\n";
+        cerr << "Error: Unable to open file for saving workout history.\n";
         return;
     }
     for (const auto& entry : workouts) {
@@ -65,33 +80,46 @@ void WorkoutHistory::saveWorkoutHistory(const std::string& filename) const {
     }
 }
 
-void WorkoutHistory::displayWorkoutHistory(bool isPremium, int limit) const {
-    if (isPremium) {
-        displayAllWorkouts();
+void WorkoutHistory::loadWorkoutHistory(const string& filename) {
+    ifstream file(filename);
+    if (!file) {
+        cerr << "Error: Unable to open file for loading workout history.\n";
+        return;
     }
-    else {
-        displayLastNWorkouts(2);
+    workouts.clear();
+    string line, name, type;
+    time_t timestamp;
+    while (getline(file, line)) {
+        istringstream stream(line);
+        if (getline(stream, name, ',') && getline(stream, type, ',') && stream >> timestamp) {
+            workouts.emplace_back(name, type, timestamp);
+        }
     }
 }
 
 void WorkoutHistory::filterWorkoutsByDate(time_t startDate, time_t endDate) const {
-    struct tm startTm, endTm;
-    if (localtime_s(&startTm, &startDate) != 0) {
-        std::cerr << "Error converting startDate to local time.\n";
-        return;
-    }
-    if (localtime_s(&endTm, &endDate) != 0) {
-        std::cerr << "Error converting endDate to local time.\n";
+    struct tm startTm {}, endTm{};
+#if defined(_WIN32) || defined(_WIN64)
+    if (localtime_s(&startTm, &startDate) != 0 || localtime_s(&endTm, &endDate) != 0) {
+#else
+    if (localtime_r(&startDate, &startTm) == nullptr || localtime_r(&endDate, &endTm) == nullptr) {
+#endif
+        std::cerr << "Error converting dates to local time.\n";
         return;
     }
     std::cout << "Workouts between "
         << std::put_time(&startTm, "%Y-%m-%d")
         << " and "
         << std::put_time(&endTm, "%Y-%m-%d") << ":\n";
+
     for (const auto& entry : workouts) {
         if (entry.timestamp >= startDate && entry.timestamp <= endDate) {
-            struct tm timeInfo;
+            struct tm timeInfo {};
+#if defined(_WIN32) || defined(_WIN64)
             if (localtime_s(&timeInfo, &entry.timestamp) == 0) {
+#else
+            if (localtime_r(&entry.timestamp, &timeInfo) != nullptr) {
+#endif
                 std::cout << "- " << entry.workoutName
                     << " (" << entry.workoutType << ") on "
                     << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
@@ -99,124 +127,88 @@ void WorkoutHistory::filterWorkoutsByDate(time_t startDate, time_t endDate) cons
             else {
                 std::cerr << "Error converting timestamp to local time.\n";
             }
+            }
         }
     }
-}
 
-void WorkoutHistory::filterWorkoutsByType(const std::string& workoutType) const {
+void WorkoutHistory::filterWorkoutsByType(const std::string & workoutType) const {
     std::cout << "Workouts of type: " << workoutType << "\n";
+
     for (const auto& entry : workouts) {
         if (entry.workoutType == workoutType) {
-            struct tm timeInfo;
+            struct tm timeInfo {};
+#if defined(_WIN32) || defined(_WIN64)
             if (localtime_s(&timeInfo, &entry.timestamp) == 0) {
+#else
+            if (localtime_r(&entry.timestamp, &timeInfo) != nullptr) {
+#endif
                 std::cout << "- " << entry.workoutName
                     << " on " << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S") << "\n";
             }
             else {
                 std::cerr << "Error converting timestamp to local time.\n";
             }
+            }
         }
     }
-}
-
-void WorkoutHistory::loadWorkoutHistory(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file) {
-        std::cerr << "Error: Unable to open file for loading workout history.\n";
-        return;
-    }
-    workouts.clear(); // Clear existing data
-    std::string line, name, type;
-    time_t timestamp;
-    while (std::getline(file, line)) {
-        std::istringstream stream(line);
-        if (std::getline(stream, name, ',') && std::getline(stream, type, ',') && stream >> timestamp) {
-            workouts.emplace_back(name, type, timestamp);
-        }
-    }
-}
-
 // User methods
-
-class user;
-
-User::User(int id, const std::string& name, bool premiumStatus, int age, float weight, const std::string& fitnessLevel)
+User::User(int id, const string& name, bool premiumStatus, int age, float weight, const string& fitnessLevel)
     : userId(id), name(name), isPremium(premiumStatus), age(age), weight(weight), fitnessLevel(fitnessLevel) {
 }
 
-Goal* userGoal; // Add this to User class in classesfitness.h
-
-
-void User::setGoal(Goal* goal) {
-    userGoal = goal;
-    std::cout << "Goal has been set for user " << name << ".\n";
-}
-void WorkoutHistory::logWorkout(const std::string& workoutName, const std::string& workoutType) {
-    workouts.emplace_back(workoutName, workoutType);
+void User::logWorkout(const string& workoutName, const string& workoutType) {
+    workoutHistory.addWorkout(workoutName, workoutType);
 }
 
-void User::logWorkout(const std::string& workoutName, const std::string& workoutType) {
-    workoutHistory.addWorkout(workoutName, workoutType); // Use the updated addWorkout method
-}
-
-void User::displayWorkoutHistory() {
+void User::displayWorkoutHistory() const {
     workoutHistory.displayWorkoutHistory(isPremium, 2);
-}
-
-void User::displayFilteredWorkoutsByDate(time_t startDate, time_t endDate) {
-    workoutHistory.filterWorkoutsByDate(startDate, endDate);
-}
-
-void User::displayFilteredWorkoutsByType(const std::string& type) {
-    workoutHistory.filterWorkoutsByType(type);
 }
 
 void User::updateUserInfo(int newAge, float newWeight) {
     age = newAge;
     weight = newWeight;
-    std::cout << "User " << name << "'s information updated: Age = " << age << ", Weight = " << weight << "\n";
-        NotificationSystem::sendNotification("User info updated: Age = " + to_string(age) + ", Weight = " + to_string(weight));
+    cout << "User " << name << "'s information updated: Age = " << age << ", Weight = " << weight << "\n";
+    NotificationSystem::sendNotification("User info updated.");
 }
 
-void User::saveUserData(const std::string& filename) const {
-    std::ofstream file(filename);
+void User::saveUserData(const string& filename) const {
+    ofstream file(filename);
     if (!file) {
-        std::cerr << "Error: Unable to save user data to " << filename << "\n";
+        cerr << "Error: Unable to save user data to " << filename << "\n";
         return;
     }
     file << userId << "\n" << name << "\n" << age << "\n" << weight << "\n" << fitnessLevel << "\n";
 }
 
-void User::loadUserData(const std::string& filename) {
-    std::ifstream file(filename);
+void User::loadUserData(const string& filename) {
+    ifstream file(filename);
     if (!file) {
-        std::cerr << "Error: Unable to load user data from " << filename << "\n";
+        cerr << "Error: Unable to load user data from " << filename << "\n";
         return;
     }
     file >> userId >> name >> age >> weight;
     file.ignore();
-    std::getline(file, fitnessLevel);
+    getline(file, fitnessLevel);
 }
 
-void User::saveWorkoutHistory(const std::string& filename) const {
-    WorkoutHistory workoutHistory;
+void User::saveWorkoutHistory(const string& filename) const {
     workoutHistory.saveWorkoutHistory(filename);
 }
 
-void User::loadWorkoutHistory(const std::string& filename) {
-    WorkoutHistory workoutHistory;
+void User::loadWorkoutHistory(const string& filename) {
     workoutHistory.loadWorkoutHistory(filename);
 }
 
 int User::getId() const { return userId; }
-std::string User::getName() const { return name; }
+string User::getName() const { return name; }
 
 // Goal methods
-Goal::Goal(const std::string& gType, float target) : goalType(gType), targetValue(target) {}
+Goal::Goal(const string& gType, float target) : goalType(gType), targetValue(target) {}
 
 void Goal::defineGoal() {
-    std::cout << "Goal defined: " << goalType << " with target " << targetValue << ".\n";
+    cout << "Goal defined: " << goalType << " with target " << targetValue << ".\n";
 }
+
 
 //Exercise instructions method
 void Exercise::displayInstruction() const {
@@ -359,4 +351,8 @@ void Exercise::displayInstruction() const {
         cout << " Step Six - Slowly lower your shoulders back to the start position. \n" << endl;
         cout << " Repeat Steps. \n " << endl;
     }
+}
+
+void User::setGoal(Goal* goal)
+{
 }
