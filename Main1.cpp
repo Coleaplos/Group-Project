@@ -9,32 +9,28 @@
 #include "classesfitness.h"
 
 using namespace std;
-// Function declarations
-void sendNotification(const std::string& message);
-void remindUserToWorkout(User* activeUser);
-void notifyGoalAchieved(User* activeUser);
-void shareWorkoutOnSocialMedia(const string& workoutName, const string& workoutCategory);
+
+// Function to send a notification
+void sendNotification(const string& message) {
+    cout << "[Notification]: " << message << endl;
+}
+
+// Function to simulate sharing on social media
+void shareOnSocialMedia(const string& platform, const string& message) {
+    cout << "Shared on " << platform << ": " << message << endl;
+}
 
 int main() {
     int username;
-    int weight1{};
-    int weight2{};
-    int weight3{};
-    int age1{};
-    int age2{};
-    int age3{};
+    float weight{};
+    int age{};
     int password{};
     int goal;
-    int workouttype;
-    int armexercise;
-    int legexercise;
-    int abexercise;
-    int backexercise;
-    int shoulderexercise;
+    int workoutType;
 
     // File paths for persistence
-    const string userDataFile = "user_data.txt";
-    const string workoutHistoryFile = "workout_history.txt";
+    const string userDataFile = "user_data";
+    const string workoutHistoryFile = "workout_history";
 
     // Create users
     User cole(1, "Cole", false, 0, 0.0f, "Beginner");
@@ -42,12 +38,12 @@ int main() {
     User thao(3, "Thao", false, 0, 0.0f, "Beginner");
 
     // Load data for all users
-    cole.loadUserData(userDataFile + "_1");
-    cole.loadWorkoutHistory(workoutHistoryFile + "_1");
-    matt.loadUserData(userDataFile + "_2");
-    matt.loadWorkoutHistory(workoutHistoryFile + "_2");
-    thao.loadUserData(userDataFile + "_3");
-    thao.loadWorkoutHistory(workoutHistoryFile + "_3");
+    cole.loadUserData(userDataFile + "_1.txt");
+    cole.loadWorkoutHistory(workoutHistoryFile + "_1.txt");
+    matt.loadUserData(userDataFile + "_2.txt");
+    matt.loadWorkoutHistory(workoutHistoryFile + "_2.txt");
+    thao.loadUserData(userDataFile + "_3.txt");
+    thao.loadWorkoutHistory(workoutHistoryFile + "_3.txt");
 
     User* activeUser = nullptr;
 
@@ -58,76 +54,44 @@ int main() {
 
     if (username == 1) {
         activeUser = &cole;
-        while (true) {
-            cout << "Please enter your password: \n";
-            cin >> password;
-            if (password != 123) {
-                cout << "Password incorrect. Please try again.\n";
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            }
-            else {
-                break;
-            }
-        }
-        cout << "Welcome Cole! Please enter your weight:\n";
-        cin >> weight1;
-        cout << "Please enter your age:\n";
-        cin >> age1;
-        activeUser->updateUserInfo(age1, static_cast<float>(weight1));
+        password = 123;
     }
     else if (username == 2) {
         activeUser = &matt;
-        while (true) {
-            cout << "Please enter your password: \n";
-            cin >> password;
-            if (password != 456) {
-                cout << "Password incorrect. Please try again.\n";
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            }
-            else {
-                break;
-            }
-        }
-        cout << "Welcome Matt! Please enter your weight:\n";
-        cin >> weight2;
-        cout << "Please enter your age:\n";
-        cin >> age2;
-        activeUser->updateUserInfo(age2, static_cast<float>(weight2));
+        password = 456;
     }
     else if (username == 3) {
         activeUser = &thao;
-        while (true) {
-            cout << "Please enter your password: \n";
-            cin >> password;
-            if (password != 789) {
-                cout << "Password incorrect. Please try again.\n";
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            }
-            else {
-                break;
-            }
-        }
-        cout << "Welcome Thao! Please enter your weight:\n";
-        cin >> weight3;
-        cout << "Please enter your age:\n";
-        cin >> age3;
-        activeUser->updateUserInfo(age3, static_cast<float>(weight3));
+        password = 789;
     }
     else {
         cout << "Invalid username selection.\n";
         return 1;
     }
 
+    cout << "Please enter your password: \n";
+    int inputPassword;
+    cin >> inputPassword;
+    if (inputPassword != password) {
+        cout << "Password incorrect. Exiting program.\n";
+        return 1;
+    }
+
+    cout << "Welcome, " << activeUser->getName() << "! Please enter your weight:\n";
+    sendNotification("Welcome back, " + activeUser->getName() + "! Ready to crush your fitness goals?");
+    cin >> weight;
+    cout << "Please enter your age:\n";
+    cin >> age;
+    activeUser->updateUserInfo(age, weight);
+
     // Main Program Loop
     while (true) {
-        cout << "Select an option:\n";
+        cout << "\nSelect an option:\n";
         cout << "1. Set Goal\n";
         cout << "2. Select and Log Workout\n";
         cout << "3. View Workout History\n";
-        cout << "4. Exit\n";
+        cout << "4. Share Progress on Social Media\n";
+        cout << "5. Exit\n";
         int choice;
         cin >> choice;
 
@@ -138,212 +102,59 @@ int main() {
             cout << "3. Lose 30 pounds\n";
             cin >> goal;
 
-            if (goal == 1) {
-                Goal userGoal("Weight Loss", 10.0f);
+            if (goal >= 1 && goal <= 3) {
+                Goal userGoal("Weight Loss", 10.0f * goal);
                 activeUser->setGoal(&userGoal);
                 userGoal.defineGoal();
-            }
-            else if (goal == 2) {
-                Goal userGoal("Weight Loss", 20.0f);
-                activeUser->setGoal(&userGoal);
-                userGoal.defineGoal();
-            }
-            else if (goal == 3) {
-                Goal userGoal("Weight Loss", 30.0f);
-                activeUser->setGoal(&userGoal);
-                userGoal.defineGoal();
+                sendNotification("Your goal to lose " + to_string(10 * goal) + " pounds has been set. Stay focused!");
             }
             else {
                 cout << "Invalid goal selection.\n";
             }
         }
         else if (choice == 2) { // Select and log workout
-            cout << "Please select what type of exercise you would like to do today:\n";
-            cout << "1 = Arms\n2 = Legs\n3 = Abs\n4 = Back\n5 = Shoulders\n";
-            cin >> workouttype;
+            cout << "Select a workout type:\n";
+            cout << "1. Arms\n2. Legs\n3. Abs\n4. Back\n5. Shoulders\n";
+            cin >> workoutType;
 
-            std::string workoutCategory;
-            std::string workoutName;
-
-            if (workouttype == 1) { // Arms
-                workoutCategory = "Arms";
-                cout << "You selected Arms. Select an arm exercise:\n";
-                cout << "1. Skull Crusher\n2. Cable Tricep Push Down\n3. Overhead Tricep Extension\n";
-                cin >> armexercise;
-
-                if (armexercise == 1) {
-                    workoutName = "Skull Crusher";
-                    Exercise skullCrusher("Skull Crusher", 3, 12, 0.0f);
-                    skullCrusher.displayInstruction();
-                }
-                else if (armexercise == 2) {
-                    workoutName = "Cable Tricep Push Down";
-                    Exercise cablePushDown("Cable Tricep Push Down", 3, 12, 0.0f);
-                    cablePushDown.displayInstruction();
-                }
-                else if (armexercise == 3) {
-                    workoutName = "Overhead Tricep Extension";
-                    Exercise overheadTriExtension("Overhead Tricep Extension", 3, 12, 0.0f);
-                    overheadTriExtension.displayInstruction();
-                }
-                else {
-                    cout << "Invalid exercise.\n";
-                }
-            }
-            else if (workouttype == 2) { // Legs
-                workoutCategory = "Legs";
-                cout << "You selected Legs. Select a leg exercise:\n";
-                cout << "1. Bulgarian Split Squat\n2. Barbell Hip Thrust\n3. Romanian Deadlift\n";
-                cin >> legexercise;
-
-                if (legexercise == 1) {
-                    workoutName = "Bulgarian Split Squat";
-                    Exercise bulgarianSplitSquat("Bulgarian Split Squat", 3, 10, 0.0f);
-                    bulgarianSplitSquat.displayInstruction();
-                }
-                else if (legexercise == 2) {
-                    workoutName = "Barbell Hip Thrust";
-                    Exercise barbellHipThrust("Barbell Hip Thrust", 3, 10, 0.0f);
-                    barbellHipThrust.displayInstruction();
-                }
-                else if (legexercise == 3) {
-                    workoutName = "Romanian Deadlift";
-                    Exercise romanianDeadlift("Romanian Deadlift", 3, 10, 0.0f);
-                    romanianDeadlift.displayInstruction();
-                }
-                else {
-                    cout << "Invalid exercise.\n";
-                }
-            }
-            else if (workouttype == 3) { // Abs
-                workoutCategory = "Abs";
-                cout << "You selected Abs. Select an abs exercise:\n";
-                cout << "1. Crunches\n2. Russian Twists\n3. Cable Crunches\n";
-                cin >> abexercise;
-
-                if (abexercise == 1) {
-                    workoutName = "Crunches";
-                    Exercise crunches("Crunches", 3, 12, 0.0f);
-                    crunches.displayInstruction();
-                }
-                else if (abexercise == 2) {
-                    workoutName = "Russian Twists";
-                    Exercise russianTwists("Russian Twists", 3, 12, 0.0f);
-                    russianTwists.displayInstruction();
-                }
-                else if (abexercise == 3) {
-                    workoutName = "Cable Crunches";
-                    Exercise cableCrunches("Cable Crunches", 3, 12, 0.0f);
-                    cableCrunches.displayInstruction();
-                }
-                else {
-                    cout << "Invalid exercise.\n";
-                }
-            }
-            else if (workouttype == 4) { // Back
-                workoutCategory = "Back";
-                cout << "You selected Back. Select a back exercise:\n";
-                cout << "1. Bent Over Barbell Row\n2. Pull Ups\n3. Dumbbell Shrugs\n";
-                cin >> backexercise;
-
-                if (backexercise == 1) {
-                    workoutName = "Bent Over Barbell Row";
-                    Exercise bentoverBarbell("Bent Over Barbell Row", 3, 12, 0.0f);
-                    bentoverBarbell.displayInstruction();
-                }
-                else if (backexercise == 2) {
-                    workoutName = "Pull Ups";
-                    Exercise pullUps("Pull Ups", 3, 12, 0.0f);
-                    pullUps.displayInstruction();
-                }
-                else if (backexercise == 3) {
-                    workoutName = "Dumbbell Shrugs";
-                    Exercise dumbbellShrugs("Dumbbell Shrugs", 3, 12, 0.0f);
-                    dumbbellShrugs.displayInstruction();
-                }
-                else {
-                    cout << "Invalid exercise.\n";
-                }
-            }
-            else if (workouttype == 5) { // Shoulders
-                workoutCategory = "Shoulders";
-                cout << "You selected Shoulders. Select a shoulder exercise:\n";
-                cout << "1. Overhead Press\n2. Lateral Raises\n3. Shrugs\n";
-                cin >> shoulderexercise;
-
-                if (shoulderexercise == 1) {
-                    workoutName = "Overhead Press";
-                    Exercise overheadPress("Overhead Press", 3, 12, 0.0f);
-                    overheadPress.displayInstruction();
-                }
-                else if (shoulderexercise == 2) {
-                    workoutName = "Lateral Raises";
-                    Exercise lateralRaises("Lateral Raises", 3, 12, 0.0f);
-                    lateralRaises.displayInstruction();
-                }
-                else if (shoulderexercise == 3) {
-                    workoutName = "Shrugs";
-                    Exercise shrugs("Shrugs", 3, 12, 0.0f);
-                    shrugs.displayInstruction();
-                }
-                else {
-                    cout << "Invalid exercise.\n";
-                }
-            }
-            else {
+            string workoutCategory, workoutName;
+            switch (workoutType) {
+            case 1: workoutCategory = "Arms"; workoutName = "Skull Crusher"; break;
+            case 2: workoutCategory = "Legs"; workoutName = "Bulgarian Split Squat"; break;
+            case 3: workoutCategory = "Abs"; workoutName = "Crunches"; break;
+            case 4: workoutCategory = "Back"; workoutName = "Pull Ups"; break;
+            case 5: workoutCategory = "Shoulders"; workoutName = "Overhead Press"; break;
+            default:
                 cout << "Invalid workout type.\n";
+                continue;
             }
 
-            // Log the workout if a valid name was selected
-            if (!workoutName.empty()) {
-                activeUser->logWorkout(workoutName, workoutCategory);
-                std::cout << "Workout logged: " << workoutName << " (" << workoutCategory << ")\n";
-            }
+            activeUser->logWorkout(workoutName, workoutCategory);
+            sendNotification("Workout logged: " + workoutName + " (" + workoutCategory + ")");
         }
-
         else if (choice == 3) {
             cout << "Viewing Workout History:\n";
             activeUser->displayWorkoutHistory();
         }
         else if (choice == 4) {
+            string platform;
+            cout << "Enter the social media platform (e.g., Facebook, Twitter, Instagram):\n";
+            cin.ignore(); // Clear newline character left in the input buffer
+            getline(cin, platform);
+            string message = activeUser->getName() + " just completed a workout!";
+            shareOnSocialMedia(platform, message);
+        }
+        else if (choice == 5) {
             cout << "Saving data...\n";
-            activeUser->saveUserData(userDataFile + "_" + to_string(activeUser->getId()));
-            activeUser->saveWorkoutHistory(workoutHistoryFile + "_" + to_string(activeUser->getId()));
+            activeUser->saveUserData(userDataFile + "_" + to_string(activeUser->getId()) + ".txt");
+            activeUser->saveWorkoutHistory(workoutHistoryFile + "_" + to_string(activeUser->getId()) + ".txt");
             cout << "Goodbye, " << activeUser->getName() << "!\n";
             break;
         }
         else {
             cout << "Invalid choice. Please try again.\n";
         }
-            // Check and send workout reminders or goal achievement notifications
-    remindUserToWorkout(activeUser);
-    notifyGoalAchieved(activeUser);
     }
 
-    // Save all user data before exiting
-    cole.saveUserData(userDataFile + "_1");
-    cole.saveWorkoutHistory(workoutHistoryFile + "_1");
-    matt.saveUserData(userDataFile + "_2");
-    matt.saveWorkoutHistory(workoutHistoryFile + "_2");
-    thao.saveUserData(userDataFile + "_3");
-    thao.saveWorkoutHistory(workoutHistoryFile + "_3");
-
-    std::cout << "All user data saved successfully. Exiting program.\n";
-
     return 0;
-}
-void sendNotification(const std::string& message)
-{
-}
-
-void remindUserToWorkout(User* activeUser)
-{
-}
-
-void notifyGoalAchieved(User* activeUser)
-{
-}
-
-void shareWorkoutOnSocialMedia(const string& workoutName, const string& workoutCategory)
-{
 }
