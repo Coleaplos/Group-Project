@@ -4,9 +4,16 @@
 #include <limits>
 #include <fstream>
 #include <ctime>
+#include <thread>
+#include <chrono>
 #include "classesfitness.h"
 
 using namespace std;
+// Function declarations
+void sendNotification(const std::string& message);
+void remindUserToWorkout(User* activeUser);
+void notifyGoalAchieved(User* activeUser);
+void shareWorkoutOnSocialMedia(const string& workoutName, const string& workoutCategory);
 
 int main() {
     int username;
@@ -308,6 +315,9 @@ int main() {
         else {
             cout << "Invalid choice. Please try again.\n";
         }
+            // Check and send workout reminders or goal achievement notifications
+    remindUserToWorkout(activeUser);
+    notifyGoalAchieved(activeUser);
     }
 
     // Save all user data before exiting
@@ -321,4 +331,19 @@ int main() {
     std::cout << "All user data saved successfully. Exiting program.\n";
 
     return 0;
+}
+void sendNotification(const std::string& message)
+{
+}
+
+void remindUserToWorkout(User* activeUser)
+{
+}
+
+void notifyGoalAchieved(User* activeUser)
+{
+}
+
+void shareWorkoutOnSocialMedia(const string& workoutName, const string& workoutCategory)
+{
 }
